@@ -371,6 +371,16 @@ img{display:block;object-fit:cover}
 .admin-table td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text)}
 .admin-table tr:hover td{background:var(--bg)}
 
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--border) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius)}
+.badge-pop{transition:transform .25s cubic-bezier(.36,.07,.19,.97)}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+.form-g .pw-wrap{position:relative}
+.form-g .pw-wrap input{padding-right:36px}
+.form-g .err-hint{font-size:10px;color:var(--danger);margin-top:3px;display:none}
+.form-g .err-hint.show{display:block}
+.search-clear{display:none;position:absolute;right:36px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:12px;padding:4px}
+.search-wrap input:not(:placeholder-shown)~.search-clear{display:block}
 /* MOBILE */
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;min-height:auto}
@@ -448,7 +458,7 @@ img{display:block;object-fit:cover}
       <div class="divider">or sign in with email</div>
       <div class="msg error" id="loginErr"></div>
       <div class="form-g"><label>Username or Email</label><input type="text" id="lUser" placeholder="Enter username or email"></div>
-      <div class="form-g"><label>Password</label><input type="password" id="lPass" placeholder="Enter password"></div>
+      <div class="form-g"><label>Password</label><div class="pw-wrap"><input type="password" id="lPass" placeholder="Enter password"><button class="pw-toggle" type="button" onclick="togglePw('lPass',this)"><i class="fas fa-eye"></i></button></div></div>
       <div class="forgot-link"><a onclick="showForgot()">Forgot Password?</a></div>
       <button class="btn-auth" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
       <div class="auth-toggle">No account? <a onclick="showSignup()">Create one free</a></div>
@@ -466,10 +476,10 @@ img{display:block;object-fit:cover}
       <div class="msg error" id="regErr"></div>
       <div class="msg success" id="regOk"></div>
       <div class="form-g"><label>Full Name</label><input type="text" id="rName" placeholder="Your full name"></div>
-      <div class="form-g"><label>Username</label><input type="text" id="rUser" placeholder="Choose a username"></div>
       <div class="form-g"><label>Email</label><input type="email" id="rEmail" placeholder="Email address"></div>
-      <div class="form-g"><label>Password</label><input type="password" id="rPass" placeholder="Password (min 6 chars)"></div>
-      <div class="form-g"><label>Confirm Password</label><input type="password" id="rConf" placeholder="Confirm password"></div>
+      <div class="form-g"><label>Phone (optional)</label><input type="tel" id="rPhone" placeholder="+255 xxx xxx xxx"></div>
+      <div class="form-g"><label>Password</label><div class="pw-wrap"><input type="password" id="rPass" placeholder="Password (min 6 chars)"><button class="pw-toggle" type="button" onclick="togglePw('rPass',this)"><i class="fas fa-eye"></i></button></div></div>
+      <div class="form-g"><label>Confirm Password</label><div class="pw-wrap"><input type="password" id="rConf" placeholder="Confirm password"><button class="pw-toggle" type="button" onclick="togglePw('rConf',this)"><i class="fas fa-eye"></i></button></div></div>
       <button class="btn-auth" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
       <div class="auth-toggle">Have an account? <a onclick="showLogin()">Sign in</a></div>
     </div>
@@ -588,7 +598,8 @@ img{display:block;object-fit:cover}
       <li><a onclick="showPage('contact')" id="nav-contact"><i class="fas fa-headset"></i><span> Support</span></a></li>
     </ul>
     <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="Search products..." onkeydown="if(event.key==='Enter')doSearch()">
+      <input type="text" id="searchInput" placeholder="Search products..." onkeydown="if(event.key==='Enter')doSearch()" oninput="toggleSearchClear()">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear"><i class="fas fa-times"></i></button>
       <button onclick="doSearch()"><i class="fas fa-search"></i></button>
     </div>
     <div class="hactions">
@@ -630,7 +641,7 @@ img{display:block;object-fit:cover}
             <p>Premium smartphones, laptops, gaming gear, cameras & smart home devices — direct from top brands at Tanzania's best prices.</p>
             <div class="hero-btns">
               <button class="btn-hero primary" onclick="scrollToCats()"><i class="fas fa-bolt"></i> Shop Now</button>
-              <button class="btn-hero secondary" onclick="filterByCat('Mobile Devices')"><i class="fas fa-mobile-alt"></i> Browse Phones</button>
+              <button class="btn-hero secondary" onclick="filterByCatName('Mobile Devices')"><i class="fas fa-mobile-alt"></i> Browse Phones</button>
             </div>
             <div class="hero-stats">
               <div class="stat"><div class="num">500+</div><div class="lbl">Products</div></div>
@@ -734,7 +745,7 @@ img{display:block;object-fit:cover}
   <div class="container">
     <div class="footer-grid">
       <div><h4><i class="fas fa-microchip"></i> TechVault</h4><p>Tanzania's premier electronics store. Quality, innovation & trust since 2020.</p></div>
-      <div><h4>Shop</h4><a href="#" onclick="filterByCat('Mobile Devices')">Smartphones</a><br><a href="#" onclick="filterByCat('Computing Devices')">Laptops</a><br><a href="#" onclick="filterByCat('Audio Devices')">Audio</a><br><a href="#" onclick="filterByCat('Gaming Devices')">Gaming</a></div>
+      <div><h4>Shop</h4><a href="#" onclick="filterByCatName('Mobile Devices')">Smartphones</a><br><a href="#" onclick="filterByCatName('Computing Devices')">Laptops</a><br><a href="#" onclick="filterByCatName('Audio Devices')">Audio</a><br><a href="#" onclick="filterByCatName('Gaming Devices')">Gaming</a></div>
       <div><h4>Support</h4><a href="#" onclick="showPage('contact')">Help Center</a><br><a href="#">Returns Policy</a><br><a href="#">Warranty</a><br><a href="#" onclick="showPage('contact')">Contact Us</a></div>
       <div><h4>Follow Us</h4><a href="#"><i class="fab fa-facebook"></i> Facebook</a><br><a href="#"><i class="fab fa-twitter"></i> Twitter</a><br><a href="#"><i class="fab fa-instagram"></i> Instagram</a><br><a href="#"><i class="fab fa-youtube"></i> YouTube</a></div>
     </div>
@@ -744,169 +755,39 @@ img{display:block;object-fit:cover}
 
 <script>
 // ============================================================
-// DATA
+// API CONFIG & HELPERS
 // ============================================================
-const CATEGORIES = [
-  {name:"Computing Devices",icon:"fa-computer",sub:["Desktop Computers","Laptops","Tablets","Mini PCs","Workstations","Servers"]},
-  {name:"Mobile Devices",icon:"fa-mobile-screen",sub:["Smartphones","Feature Phones","Smartwatches","Fitness Trackers","E-readers"]},
-  {name:"Audio Devices",icon:"fa-headphones",sub:["Speakers","Headphones","Earbuds","Microphones","Soundbars","DJ Equipment"]},
-  {name:"Video & Display",icon:"fa-tv",sub:["Televisions","Monitors","Projectors","Digital Signage","VR/AR Headsets"]},
-  {name:"Photography",icon:"fa-camera",sub:["Digital Cameras","DSLR Cameras","Mirrorless","Action Cameras","Drones"]},
-  {name:"Gaming Devices",icon:"fa-gamepad",sub:["Gaming Consoles","Handheld Consoles","Gaming PCs","Gaming Accessories","VR Gaming"]},
-  {name:"Networking",icon:"fa-network-wired",sub:["Routers","Modems","Switches","Access Points","Firewalls"]},
-  {name:"Storage",icon:"fa-database",sub:["External HDDs","SSDs","USB Drives","Memory Cards","NAS Systems"]},
-  {name:"Peripherals",icon:"fa-keyboard",sub:["Keyboards","Mice","Printers","Webcams","Docking Stations"]},
-  {name:"Smart Home",icon:"fa-house-chimney",sub:["Smart Lights","Smart Plugs","Thermostats","Smart Locks","Security Cameras"]},
-  {name:"Home Appliances",icon:"fa-kitchen-set",sub:["Refrigerators","Washing Machines","Air Conditioners","Vacuum Cleaners","Microwaves"]},
-  {name:"Power Devices",icon:"fa-bolt",sub:["Power Banks","UPS Systems","Inverters","Solar Chargers","Battery Chargers"]},
-  {name:"Wearables",icon:"fa-clock",sub:["Smart Glasses","Smart Rings","Health Trackers","GPS Watches"]},
-  {name:"Security & CCTV",icon:"fa-shield-halved",sub:["CCTV Cameras","Alarm Systems","Biometric Scanners","Motion Detectors"]},
-  {name:"Electronic Components",icon:"fa-microchip",sub:["Microcontrollers","Sensors","LEDs","Resistors","PCBs"]}
-];
+const API = ''; // empty string = same origin (works locally & on Railway)
+function getToken() { return localStorage.getItem('tv_token') || null; }
+function setToken(t) { if(t) localStorage.setItem('tv_token',t); else localStorage.removeItem('tv_token'); }
 
-// Real product images from CDN
-const PRODUCTS = [
-  // MOBILE
-  {id:1,name:"iPhone 15 Pro Max",brand:"Apple",cat:"Mobile Devices",price:3200000,tax:512000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&q=80","https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80"],
-   specs:[["Display","6.7\" Super Retina XDR OLED"],["Processor","A17 Pro (3nm)"],["RAM","8GB"],["Storage","256GB"],["Camera","48MP + 12MP + 12MP"],["Battery","4422 mAh"],["OS","iOS 17"],["Build","Titanium frame"]]},
-  {id:2,name:"Samsung Galaxy S24 Ultra",brand:"Samsung",cat:"Mobile Devices",price:2800000,tax:448000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80","https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80","https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&q=80"],
-   specs:[["Display","6.8\" QHD+ AMOLED"],["Processor","Snapdragon 8 Gen 3"],["RAM","12GB"],["Storage","256GB"],["Camera","200MP + 50MP + 10MP"],["Battery","5000 mAh"],["S Pen","Built-in"],["OS","Android 14"]]},
-  {id:3,name:"Google Pixel 9 Pro",brand:"Google",cat:"Mobile Devices",price:1900000,tax:304000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1598327106026-d9521da673d3?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1598327106026-d9521da673d3?w=400&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80","https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&q=80"],
-   specs:[["Display","6.7\" LTPO OLED"],["Processor","Google Tensor G4"],["RAM","12GB"],["Storage","128GB"],["Camera","50MP + 48MP"],["Battery","4700 mAh"],["AI","Google AI features"],["OS","Android 14"]]},
-  {id:4,name:"OnePlus 12",brand:"OnePlus",cat:"Mobile Devices",price:1650000,tax:264000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80","https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80"],
-   specs:[["Display","6.82\" AMOLED 120Hz"],["Processor","Snapdragon 8 Gen 3"],["RAM","16GB"],["Storage","512GB"],["Camera","50MP Hasselblad"],["Battery","5400 mAh"],["Charging","100W SUPERVOOC"],["OS","OxygenOS 14"]]},
-  // COMPUTING
-  {id:5,name:"MacBook Pro 16\"",brand:"Apple",cat:"Computing Devices",price:4500000,tax:720000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80","https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80","https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80"],
-   specs:[["Display","16.2\" Liquid Retina XDR"],["Processor","Apple M3 Pro"],["RAM","18GB Unified"],["Storage","512GB SSD"],["Battery","22-hr life"],["GPU","18-core GPU"],["Ports","3x USB-C Thunderbolt"],["Weight","2.14 kg"]]},
-  {id:6,name:"MacBook Air 15\"",brand:"Apple",cat:"Computing Devices",price:2800000,tax:448000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80","https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80","https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80"],
-   specs:[["Display","15.3\" Liquid Retina"],["Processor","Apple M3"],["RAM","8GB"],["Storage","256GB SSD"],["Battery","18-hr life"],["Weight","1.51 kg"],["Fans","Fanless"],["MagSafe","3 charging"]]},
-  {id:7,name:"Dell XPS 16 OLED",brand:"Dell",cat:"Computing Devices",price:2500000,tax:400000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80","https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80","https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80"],
-   specs:[["Display","16\" 4K OLED Touch"],["Processor","Intel Core Ultra 9"],["RAM","32GB DDR5"],["Storage","1TB NVMe SSD"],["GPU","NVIDIA RTX 4070"],["Battery","86 Wh"],["Weight","1.86 kg"],["OS","Windows 11 Pro"]]},
-  // VIDEO & DISPLAY
-  {id:8,name:"Samsung QLED 4K 65\"",brand:"Samsung",cat:"Video & Display",price:2800000,tax:448000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1601944177325-f8867652837f?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1601944177325-f8867652837f?w=400&q=80","https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&q=80","https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?w=400&q=80"],
-   specs:[["Type","Neo QLED 4K"],["Size","65 inches"],["Resolution","3840×2160"],["Refresh","120Hz"],["HDR","HDR10+ / Dolby Vision"],["Smart","Tizen OS"],["Audio","60W 4.2ch"],["HDMI","4x HDMI 2.1"]]},
-  {id:9,name:"LG OLED evo C3 65\"",brand:"LG",cat:"Video & Display",price:3500000,tax:560000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&q=80","https://images.unsplash.com/photo-1601944177325-f8867652837f?w=400&q=80","https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?w=400&q=80"],
-   specs:[["Type","WOLED evo"],["Size","65 inches"],["Resolution","4K UHD"],["Refresh","120Hz VRR"],["HDR","Dolby Vision IQ"],["Gaming","G-Sync Compatible"],["Smart","webOS 23"],["HDMI","4x HDMI 2.1"]]},
-  // PHOTOGRAPHY
-  {id:10,name:"Sony Alpha A7 IV",brand:"Sony",cat:"Photography",price:3800000,tax:608000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1606986628253-3e19be39a71d?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1606986628253-3e19be39a71d?w=400&q=80","https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80","https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80"],
-   specs:[["Type","Full-frame Mirrorless"],["Sensor","33 MP BSI-CMOS"],["AF Points","759 Phase-detect"],["Video","4K 60fps 10-bit"],["ISO","100-51200"],["Stabilization","5-axis IBIS"],["Battery","580 shots"],["Weight","658 g"]]},
-  {id:11,name:"Canon EOS R5 Mark II",brand:"Canon",cat:"Photography",price:4500000,tax:720000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80","https://images.unsplash.com/photo-1606986628253-3e19be39a71d?w=400&q=80","https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80"],
-   specs:[["Type","Full-frame Mirrorless"],["Sensor","45 MP CMOS"],["AF","Dual Pixel CMOS AF II"],["Video","8K RAW / 4K 120fps"],["ISO","100-102400"],["IBIS","8-stop"],["CFexpress","Type-B slot"],["Weight","746 g"]]},
-  {id:12,name:"GoPro Hero 13 Black",brand:"GoPro",cat:"Photography",price:750000,tax:120000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80","https://images.unsplash.com/photo-1606986628253-3e19be39a71d?w=400&q=80","https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80"],
-   specs:[["Sensor","27MP"],["Video","5.3K 60fps"],["Waterproof","10m without case"],["Stabilization","HyperSmooth 6.0"],["Battery","5.5-hr 1080p"],["Connectivity","Wi-Fi, Bluetooth"],["Lens","Interchangeable"],["Screen","Rear 2.27\""]]},
-  // AUDIO
-  {id:13,name:"Sony WH-1000XM6",brand:"Sony",cat:"Audio Devices",price:450000,tax:72000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80","https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80","https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80"],
-   specs:[["Type","Over-ear ANC"],["Driver","40mm"],["ANC","Industry-leading"],["Battery","40 hrs"],["Quick Charge","10 min = 5 hrs"],["Bluetooth","5.3"],["Codec","LDAC, AAC, SBC"],["Weight","250 g"]]},
-  {id:14,name:"Bose QuietComfort Ultra",brand:"Bose",cat:"Audio Devices",price:520000,tax:83200,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80","https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80"],
-   specs:[["Type","Over-ear ANC"],["Immersive Audio","Bose Immersive Audio"],["ANC","Adaptive"],["Battery","24 hrs"],["Quick Charge","15 min = 3 hrs"],["Bluetooth","5.3"],["Multipoint","2 devices"],["Weight","256 g"]]},
-  {id:15,name:"JBL Flip 7",brand:"JBL",cat:"Audio Devices",price:185000,tax:29600,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80","https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&q=80"],
-   specs:[["Type","Portable Bluetooth"],["Output","20W"],["Battery","12 hrs"],["Waterproof","IP67"],["Bluetooth","5.3"],["PartyBoost","100+ speakers"],["Weight","540 g"],["USB-C","Charging"]]},
-  // GAMING
-  {id:16,name:"PlayStation 5 Pro",brand:"Sony",cat:"Gaming Devices",price:1200000,tax:192000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80","https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=400&q=80","https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80"],
-   specs:[["CPU","AMD Zen 2 Enhanced"],["GPU","10.3 TFLOPS"],["Storage","2TB Custom SSD"],["Resolution","8K / 4K 120fps"],["Ray Tracing","Yes"],["Disc Drive","Ultra HD Blu-ray"],["Audio","Tempest 3D"],["Backward Compat","PS4 games"]]},
-  {id:17,name:"Xbox Series X",brand:"Microsoft",cat:"Gaming Devices",price:950000,tax:152000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=400&q=80","https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80","https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80"],
-   specs:[["CPU","Custom AMD Zen 2 8-core"],["GPU","12 TFLOPS RDNA 2"],["Storage","1TB NVMe SSD"],["Resolution","8K / 4K 120fps"],["Ray Tracing","DirectX Raytracing"],["Smart Delivery","Auto game versions"],["Game Pass","Compatible"],["Backward Compat","Xbox One/360/OG"]]},
-  {id:18,name:"Nintendo Switch 2",brand:"Nintendo",cat:"Gaming Devices",price:650000,tax:104000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80","https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80","https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=400&q=80"],
-   specs:[["Display","8\" OLED 120Hz"],["Storage","256GB"],["Battery","5-9 hrs"],["Mode","TV / Tabletop / Handheld"],["Joy-Con","New magnetic attach"],["Online","Nintendo Online"],["USB-C","Charging"],["Resolution","1080p handheld"]]},
-  // SMART HOME
-  {id:19,name:"Amazon Echo Show 15",brand:"Amazon",cat:"Smart Home",price:420000,tax:67200,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=400&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?w=400&q=80"],
-   specs:[["Display","15.6\" 1080p"],["Assistant","Alexa built-in"],["Camera","5MP"],["Smart Home","Controls 100K+ devices"],["Fire TV","Built-in"],["Widgets","Customizable"],["Privacy","Camera shutter"],["Connectivity","Wi-Fi 6, Bluetooth"]]},
-  {id:20,name:"Google Nest Hub Max",brand:"Google",cat:"Smart Home",price:350000,tax:56000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=400&q=80","https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?w=400&q=80"],
-   specs:[["Display","10\" HD"],["Assistant","Google Assistant"],["Camera","6.5MP"],["Face Match","Personalized info"],["Audio","Speaker + microphone"],["Smart Home","Works with 50K+ devices"],["Privacy","Ambient mode"],["Connectivity","Wi-Fi, Bluetooth"]]},
-  // WEARABLES
-  {id:21,name:"Apple Watch Ultra 3",brand:"Apple",cat:"Wearables",price:1300000,tax:208000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&q=80","https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&q=80","https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"],
-   specs:[["Display","2.1\" LTPO OLED"],["Case","Titanium 49mm"],["Water Resist","100m / EN13319"],["GPS","L1/L2 dual-frequency"],["Battery","60 hrs / 36 hrs AON"],["ECG","+ Blood Oxygen"],["Temperature","Wrist sensor"],["Crash Detection","Yes"]]},
-  {id:22,name:"Samsung Galaxy Watch 7",brand:"Samsung",cat:"Wearables",price:600000,tax:96000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&q=80","https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&q=80","https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"],
-   specs:[["Display","1.5\" AMOLED 480×480"],["Processor","Exynos W1000"],["Storage","32GB"],["RAM","2GB"],["Battery","500 mAh / 40 hrs"],["Health","BIA body comp, ECG, BP"],["Water Resist","5ATM + IP68"],["OS","Wear OS + One UI Watch"]]},
-  // POWER
-  {id:23,name:"Anker 747 PowerCore",brand:"Anker",cat:"Power Devices",price:150000,tax:24000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1609592424741-4ccd3f5b5fd1?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1609592424741-4ccd3f5b5fd1?w=400&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?w=400&q=80"],
-   specs:[["Capacity","26800 mAh"],["Output","60W USB-C"],["Ports","2x USB-C + 2x USB-A"],["Charges","MacBook full 1x"],["Size","147×69×38mm"],["Weight","622 g"],["Airline Safe","Yes"],["Certification","CE / FCC / RoHS"]]},
-  {id:24,name:"Xiaomi 14 Ultra",brand:"Xiaomi",cat:"Mobile Devices",price:1750000,tax:280000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&q=80","https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80","https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80"],
-   specs:[["Display","6.73\" AMOLED 2K 120Hz"],["Processor","Snapdragon 8 Gen 3"],["RAM","16GB LPDDR5X"],["Storage","512GB UFS 4.0"],["Camera","50MP Leica Summilux"],["Battery","5000 mAh"],["Charging","90W + 80W wireless"],["OS","HyperOS"]]},
-  {id:25,name:"Steam Deck OLED 1TB",brand:"Valve",cat:"Gaming Devices",price:780000,tax:124800,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80","https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=400&q=80","https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80"],
-   specs:[["Display","7.4\" OLED 90Hz"],["Processor","AMD Zen 2 + RDNA 2"],["RAM","16GB LPDDR5"],["Storage","1TB NVMe SSD"],["Battery","50 Whr / ~12hrs"],["OS","SteamOS 3"],["Controls","Trackpads + Gyro"],["Dock","USB-C 4K output"]]},
-  {id:26,name:"Sony Alpha ZV-E10 II",brand:"Sony",cat:"Photography",price:1100000,tax:176000,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1607462109225-6b64ae2dd3cb?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1607462109225-6b64ae2dd3cb?w=400&q=80","https://images.unsplash.com/photo-1606986628253-3e19be39a71d?w=400&q=80","https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80"],
-   specs:[["Type","APS-C Mirrorless Vlog"],["Sensor","26 MP BSI-CMOS"],["AF","AI Subject Recognition"],["Video","4K 60fps 10-bit"],["Mic Input","3.5mm"],["IBIS","Active Mode"],["Weight","293 g"],["Mount","Sony E-mount"]]},
-  {id:27,name:"Samsung Galaxy Tab S10 Ultra",brand:"Samsung",cat:"Computing Devices",price:1800000,tax:288000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&q=80","https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80","https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80"],
-   specs:[["Display","14.6\" Dynamic AMOLED 2X"],["Processor","Snapdragon 8 Gen 2"],["RAM","12GB"],["Storage","256GB + MicroSD"],["S Pen","Included"],["Battery","11200 mAh"],["Weight","718 g"],["OS","Android 14 / One UI"]]},
-  {id:28,name:"Roborock S8 MaxV Ultra",brand:"Roborock",cat:"Smart Home",price:1200000,tax:192000,stock:true,badge:"NEW",
-   img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=400&q=80","https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?w=400&q=80"],
-   specs:[["Suction","10000 Pa"],["Mop","VibraRise 3.0"],["AI Obstacle","3D mapping camera"],["Auto Empty","60-day bin"],["Wash & Dry","Hot air dry mop"],["Navigation","LiDAR 3D"],["Battery","180 min runtime"],["Maps","Multi-level"]]},
-  {id:29,name:"AirPods Pro 2nd Gen",brand:"Apple",cat:"Audio Devices",price:380000,tax:60800,stock:true,badge:null,
-   img:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80","https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&q=80"],
-   specs:[["Chip","H2"],["ANC","Adaptive Transparency"],["Battery","6hrs + 30hrs case"],["Spatial Audio","Head tracking"],["Water","IPX4"],["Find My","Precision finding"],["USB-C","Case charging"],["Hearing Aid","FDA approved"]]},
-  {id:30,name:"MSI GeForce RTX 4090",brand:"MSI",cat:"Computing Devices",price:3200000,tax:512000,stock:true,badge:"HOT",
-   img:"https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&q=80",
-   imgs:["https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&q=80","https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&q=80","https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80"],
-   specs:[["GPU","NVIDIA AD102"],["VRAM","24GB GDDR6X"],["CUDA Cores","16384"],["Boost Clock","2610 MHz"],["TDP","450W"],["Connector","16-pin 600W"],["Outputs","3x DP 1.4a + 1x HDMI 2.1"],["Length","336mm"]]},
-];
+async function apiFetch(path, opts={}) {
+  const token = getToken();
+  const headers = { 'Accept': 'application/json', ...(opts.headers||{}) };
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  if(opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+    opts.body = JSON.stringify(opts.body);
+    headers['Content-Type'] = 'application/json';
+  }
+  const res = await fetch(API+path, { ...opts, headers });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw { status: res.status, data };
+  return data;
+}
 
 // ============================================================
 // STATE
 // ============================================================
-let cart = [];
-let wishlist = [];
-let currentUser = null;
-let currentProduct = null;
-let modalQty = 1;
-let slideIdx = 0;
-let slideTimer = null;
+let allProducts   = [];
+let allCategories = [];
+let allBanners    = [];
+let cart          = [];
+let wishlist      = [];
+let currentUser   = null;
+let currentProduct= null;
+let modalQty      = 1;
+let slideIdx      = 0;
+let slideTimer    = null;
 
 // ============================================================
 // STORAGE HELPERS
@@ -915,129 +796,206 @@ function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); 
 function load(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
 
 // ============================================================
+// PRODUCT NORMALIZERS  (API shape → UI)
+// ============================================================
+const PH = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80';
+function pImg(p, idx=0) {
+  if(!p.images||!p.images.length) return PH;
+  const s=[...p.images].sort((a,b)=>(b.is_primary?1:0)-(a.is_primary?1:0)||((a.sort_order||0)-(b.sort_order||0)));
+  const img=s[idx]||s[0]; return img?'/storage/'+img.path:PH;
+}
+function pImgs(p) {
+  if(!p.images||!p.images.length) return [PH];
+  return [...p.images].sort((a,b)=>(b.is_primary?1:0)-(a.is_primary?1:0)||((a.sort_order||0)-(b.sort_order||0))).map(i=>'/storage/'+i.path);
+}
+function pBadge(p)  { return p.is_featured?'HOT':p.is_popular?'NEW':null; }
+function pSpecs(p)  { if(!p.specifications) return []; if(Array.isArray(p.specifications)) return p.specifications; return Object.entries(p.specifications); }
+function pPrice(p)  { return parseFloat(p.discount_price||p.price||0); }
+function pTax(p)    { return Math.round(pPrice(p)*0.18); }
+function pStock(p)  { return (p.stock||0)>0; }
+function pCat(p)    { return p.category?.name||''; }
+
+// ============================================================
 // INIT
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  cart = load('tv_cart', []);
-  wishlist = load('tv_wish', []);
-  currentUser = load('tv_user', null);
+document.addEventListener('DOMContentLoaded', async ()=>{
+  cart     = load('tv_cart',[]);
+  wishlist = load('tv_wish',[]);
+  loadTheme();
+  renderSkeleton();
+
+  // Restore session from stored token
+  const storedUser = load('tv_user',null);
+  if(storedUser && getToken()) {
+    currentUser = storedUser;
+    updateUserUI();
+    apiFetch('/api/user')
+      .then(u=>{ currentUser=u; save('tv_user',u); updateUserUI(); })
+      .catch(()=>{ currentUser=null; setToken(null); save('tv_user',null); updateUserUI(); });
+  }
+
+  // Fetch catalog in parallel
+  try {
+    const [cats, prods, banners] = await Promise.all([
+      apiFetch('/api/categories'),
+      apiFetch('/api/products?per_page=100'),
+      apiFetch('/api/banners'),
+    ]);
+    allCategories = Array.isArray(cats)  ? cats   : (cats.data||[]);
+    allProducts   = Array.isArray(prods) ? prods  : (prods.data||[]);
+    allBanners    = Array.isArray(banners)? banners: (banners.data||[]);
+  } catch(e) {
+    showToast('⚠️ Cannot reach server. Start php artisan serve.','error');
+  }
+
   renderSidebar();
   renderSlider();
   renderAllCats();
   updateCartUI();
   updateWishUI();
-  updateUserUI();
-  loadTheme();
   startSlide();
 
-  // close menus on outside click
-  document.addEventListener('click', e => {
-    const m = document.getElementById('acctMenu');
-    if (!m.parentElement.contains(e.target)) closeAcct();
+  document.addEventListener('click',e=>{
+    const m=document.getElementById('acctMenu');
+    if(!m.parentElement.contains(e.target)) closeAcct();
   });
 });
+
+// ============================================================
+// SKELETON LOADER
+// ============================================================
+function renderSkeleton() {
+  document.getElementById('catSections').innerHTML=`
+    <div style="margin-top:14px">
+      <div class="skeleton" style="height:20px;width:180px;margin-bottom:12px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px">
+        ${Array(6).fill(0).map(()=>`<div class="skeleton" style="height:230px"></div>`).join('')}
+      </div>
+    </div>`;
+}
 
 // ============================================================
 // SIDEBAR
 // ============================================================
 function renderSidebar() {
   const el = document.getElementById('sbGroups');
-  el.innerHTML = CATEGORIES.map((g,i) => `
+  if(!allCategories.length) {
+    el.innerHTML='<div style="color:rgba(255,255,255,.6);font-size:11px;padding:8px 6px">Loading categories...</div>';
+    return;
+  }
+  el.innerHTML = allCategories.map(g=>`
     <div class="sb-group">
-      <div class="sb-title" onclick="toggleSbGroup(${i})">
-        <span><i class="fas ${g.icon}"></i> <span class="t-text">${g.name}</span></span>
-        <span class="arr" id="arr${i}">▼</span>
+      <div class="sb-title" onclick="filterByCat(${g.id})" style="cursor:pointer">
+        <span><i class="fas ${g.icon||'fa-tag'}"></i> <span class="t-text">${g.name}</span></span>
       </div>
-      <ul class="sb-items" id="sg${i}">
-        ${g.sub.map(s=>`<li><a onclick="filterByCat('${g.name}');showToast('Browsing: ${s}','success')"><span>${s}</span></a></li>`).join('')}
-      </ul>
     </div>`).join('');
-  toggleSbGroup(0);
-}
-function toggleSbGroup(i) {
-  const el = document.getElementById('sg'+i);
-  const arr = document.getElementById('arr'+i);
-  if (el) { el.classList.toggle('open'); if (arr) arr.classList.toggle('open'); }
 }
 
 // ============================================================
 // HERO SLIDER
 // ============================================================
 function renderSlider() {
-  const featured = PRODUCTS.filter((_,i) => i < 8);
   const track = document.getElementById('sliderTrack');
-  const dots = document.getElementById('sliderDots');
-  track.innerHTML = featured.map(p => `
-    <div class="slide" onclick="openProduct(${p.id})">
-      <img class="slide-img" src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'">
-      <div class="slide-content">
-        <span class="slide-tag">${p.badge||'🔥 FEATURED'}</span>
-        <h3>${p.name}</h3>
-        <div class="slide-brand">${p.brand}</div>
-        <div class="slide-price">TSh ${fmt(p.price)}</div>
-        <button class="slide-btn" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-      </div>
-    </div>`).join('');
-  dots.innerHTML = featured.map((_,i)=>`<button class="dot${i===0?' active':''}" onclick="goSlide(${i})"></button>`).join('');
+  const dots  = document.getElementById('sliderDots');
+
+  if(allBanners.length) {
+    track.innerHTML = allBanners.map(b=>`
+      <div class="slide">
+        <img class="slide-img" src="${b.image_path?'/storage/'+b.image_path:PH}" alt="${b.title||''}" onerror="this.src='${PH}'">
+        <div class="slide-content">
+          ${b.badge?`<span class="slide-tag">${b.badge}</span>`:''}
+          <h3>${b.title||''}</h3>
+          <div class="slide-brand">${b.subtitle||''}</div>
+          ${b.cta_text?`<button class="slide-btn" onclick="${b.cta_url?`window.location='${b.cta_url}'`:'scrollToCats()'}">${b.cta_text}</button>`:''}
+        </div>
+      </div>`).join('');
+    dots.innerHTML = allBanners.map((_,i)=>`<button class="dot${i===0?' active':''}" onclick="goSlide(${i})"></button>`).join('');
+  } else {
+    // Fallback: first 8 products (featured first)
+    const featured = [...allProducts].sort((a,b)=>(b.is_featured?1:0)-(a.is_featured?1:0)).slice(0,8);
+    if(!featured.length) { track.innerHTML=''; dots.innerHTML=''; return; }
+    track.innerHTML = featured.map(p=>`
+      <div class="slide" onclick="openProduct(${p.id})">
+        <img class="slide-img" src="${pImg(p)}" alt="${p.name}" onerror="this.src='${PH}'">
+        <div class="slide-content">
+          ${pBadge(p)?`<span class="slide-tag">${pBadge(p)}</span>`:'<span class="slide-tag">🔥 FEATURED</span>'}
+          <h3>${p.name}</h3>
+          <div class="slide-brand">${p.brand||''}</div>
+          <div class="slide-price">TSh ${fmt(pPrice(p))}</div>
+          <button class="slide-btn" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+        </div>
+      </div>`).join('');
+    dots.innerHTML = featured.map((_,i)=>`<button class="dot${i===0?' active':''}" onclick="goSlide(${i})"></button>`).join('');
+  }
 }
-function startSlide() { slideTimer = setInterval(slideNext,5000); }
-function slideNext() {
-  const n = document.querySelectorAll('.slide').length;
-  slideIdx = (slideIdx+1)%n;
-  applySlide();
-}
-function slidePrev() {
-  const n = document.querySelectorAll('.slide').length;
-  slideIdx = (slideIdx-1+n)%n;
-  applySlide();
-  resetTimer();
-}
-function goSlide(i) { slideIdx=i; applySlide(); resetTimer(); }
-function applySlide() {
+
+function startSlide()  { slideTimer=setInterval(slideNext,5000); }
+function slideNext()   { const n=document.querySelectorAll('.slide').length; if(!n) return; slideIdx=(slideIdx+1)%n; applySlide(); }
+function slidePrev()   { const n=document.querySelectorAll('.slide').length; if(!n) return; slideIdx=(slideIdx-1+n)%n; applySlide(); resetTimer(); }
+function goSlide(i)    { slideIdx=i; applySlide(); resetTimer(); }
+function applySlide()  {
   document.getElementById('sliderTrack').style.transform=`translateX(-${slideIdx*100}%)`;
   document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===slideIdx));
 }
-function resetTimer() { clearInterval(slideTimer); startSlide(); }
+function resetTimer()  { clearInterval(slideTimer); startSlide(); }
+
+// Pause auto-play on slider hover
+document.addEventListener('DOMContentLoaded',()=>{
+  const box=document.querySelector('.slider-box');
+  if(box){
+    box.addEventListener('mouseenter',()=>clearInterval(slideTimer));
+    box.addEventListener('mouseleave',()=>startSlide());
+  }
+});
 
 // ============================================================
 // RENDER PRODUCTS
 // ============================================================
-const CAT_ICONS = {'Mobile Devices':'fa-mobile-screen','Computing Devices':'fa-computer','Video & Display':'fa-tv','Photography':'fa-camera','Audio Devices':'fa-headphones','Gaming Devices':'fa-gamepad','Smart Home':'fa-house-chimney','Wearables':'fa-clock','Power Devices':'fa-bolt'};
-const SHOW_CATS = ['Mobile Devices','Computing Devices','Video & Display','Photography','Audio Devices','Gaming Devices','Smart Home','Wearables','Power Devices'];
-
-function renderAllCats(filterCat=null, searchQ=null) {
+function renderAllCats(filterCatId=null, searchQ=null) {
   const container = document.getElementById('catSections');
-  let cats = SHOW_CATS;
-  if (filterCat) cats = cats.filter(c=>c===filterCat);
+  let cats = allCategories;
+  if(filterCatId) cats = cats.filter(c=>c.id===filterCatId);
+
   let html = '';
-  for (const cat of cats) {
-    let prods = PRODUCTS.filter(p=>p.cat===cat);
-    if (searchQ) prods = prods.filter(p=>p.name.toLowerCase().includes(searchQ)||p.brand.toLowerCase().includes(searchQ)||p.cat.toLowerCase().includes(searchQ));
-    if (!prods.length) continue;
-    html += `<div class="cat-section" id="cat-${cat.replace(/\s/g,'_')}">
+  for(const cat of cats) {
+    let prods = allProducts.filter(p=>p.category_id===cat.id);
+    if(searchQ) prods = prods.filter(p=>
+      p.name.toLowerCase().includes(searchQ)||
+      (p.brand||'').toLowerCase().includes(searchQ)||
+      (p.category?.name||'').toLowerCase().includes(searchQ));
+    if(!prods.length) continue;
+    html += `<div class="cat-section" id="cat-${cat.id}">
       <div class="cat-header">
-        <h2><i class="fas ${CAT_ICONS[cat]||'fa-tag'}"></i> ${cat}</h2>
+        <h2><i class="fas ${cat.icon||'fa-tag'}"></i> ${cat.name}</h2>
         <span class="cat-count">${prods.length} Products</span>
       </div>
       <div class="products-grid">${prods.map(cardHtml).join('')}</div>
     </div>`;
   }
-  if (!html) html = `<div style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-search" style="font-size:40px;opacity:.3;margin-bottom:12px"></i><p style="font-size:15px">No products found${searchQ?' for "'+searchQ+'"':''}</p></div>`;
+
+  if(!html) html=`<div style="text-align:center;padding:40px;color:var(--muted)">
+    <i class="fas fa-search" style="font-size:40px;opacity:.3;margin-bottom:12px;display:block"></i>
+    <p style="font-size:15px">No products found${searchQ?' for "'+searchQ+'"':''}</p>
+    ${searchQ?`<button onclick="clearSearch()" style="margin-top:12px;padding:6px 18px;background:var(--primary);color:#fff;border:none;border-radius:20px;cursor:pointer;font-weight:700">Clear Search</button>`:''}
+  </div>`;
+
   container.innerHTML = html;
 }
 
 function cardHtml(p) {
-  const inWish = wishlist.includes(p.id);
+  const inWish  = wishlist.includes(p.id);
+  const badge   = pBadge(p);
+  const inStock = pStock(p);
   return `<div class="pcard" onclick="openProduct(${p.id})">
-    ${p.badge?`<div class="pcard-badge${p.badge==='NEW'?' new':''}">${p.badge}</div>`:''}
-    <img class="pcard-img" src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'" loading="lazy">
-    <div class="pcard-cat">${p.cat}</div>
-    <h4>${p.name}</h4>
-    <div class="brand">${p.brand}</div>
-    <div class="price">TSh ${fmt(p.price)}</div>
-    <div class="tax">+ TSh ${fmt(p.tax)} tax</div>
+    ${badge?`<div class="pcard-badge${badge==='NEW'?' new':''}">${badge}</div>`:''}
+    <img class="pcard-img" src="${pImg(p)}" alt="${p.name}" onerror="this.src='${PH}'" loading="lazy">
+    <div class="pcard-cat">${pCat(p)}</div>
+    <h4 style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.name}</h4>
+    <div class="brand">${p.brand||''}</div>
+    <div class="price">TSh ${fmt(pPrice(p))}</div>
+    <div class="tax">+ TSh ${fmt(pTax(p))} tax</div>
     <div class="pcard-actions">
-      <span class="stock-badge ${p.stock?'in':'out'}">${p.stock?'In Stock':'Sold Out'}</span>
+      <span class="stock-badge ${inStock?'in':'out'}">${inStock?'In Stock':'Sold Out'}</span>
       <button class="btn-add" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fas fa-cart-plus"></i> Add</button>
       <button class="btn-wish ${inWish?'active':''}" onclick="event.stopPropagation();toggleWishItem(${p.id})" title="Wishlist"><i class="fa${inWish?'s':'r'} fa-heart"></i></button>
     </div>
@@ -1048,19 +1006,30 @@ function cardHtml(p) {
 // SEARCH
 // ============================================================
 function doSearch() {
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  if (!q) { renderAllCats(); return; }
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  if(!q){ renderAllCats(); return; }
   showPage('home');
-  renderAllCats(null, q);
+  renderAllCats(null,q);
+}
+function clearSearch() {
+  document.getElementById('searchInput').value='';
+  toggleSearchClear();
+  renderAllCats();
+}
+function toggleSearchClear() {
+  const v=document.getElementById('searchInput').value;
+  document.getElementById('searchClear').style.display=v?'block':'none';
 }
 
-function filterByCat(cat) {
+function filterByCat(catId) {
   showPage('home');
-  renderAllCats(cat);
-  setTimeout(()=>{
-    const el = document.getElementById('cat-'+cat.replace(/\s/g,'_'));
-    if(el) el.scrollIntoView({behavior:'smooth'});
-  },100);
+  renderAllCats(catId);
+  setTimeout(()=>{ const el=document.getElementById('cat-'+catId); if(el) el.scrollIntoView({behavior:'smooth'}); },100);
+}
+function filterByCatName(name) {
+  const cat=allCategories.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(cat) filterByCat(cat.id);
+  else { showPage('home'); renderAllCats(null,name.toLowerCase()); }
 }
 function scrollToCats() { document.getElementById('catSections').scrollIntoView({behavior:'smooth'}); }
 
@@ -1068,87 +1037,84 @@ function scrollToCats() { document.getElementById('catSections').scrollIntoView(
 // PRODUCT MODAL
 // ============================================================
 function openProduct(id) {
-  const p = PRODUCTS.find(x=>x.id===id);
+  const p=allProducts.find(x=>x.id===id);
   if(!p) return;
-  currentProduct = p;
-  modalQty = 1;
-  document.getElementById('mQty').textContent = 1;
-  document.getElementById('mCat').textContent = p.cat;
-  document.getElementById('mName').textContent = p.name;
-  document.getElementById('mBrand').textContent = p.brand;
-  document.getElementById('mPrice').textContent = 'TSh '+fmt(p.price);
-  document.getElementById('mTax').textContent = 'Total with tax: TSh '+fmt(p.price+p.tax);
-  const stk = document.getElementById('mStock');
-  stk.textContent = p.stock ? '✅ In Stock' : '❌ Out of Stock';
-  stk.className = 'modal-stock '+(p.stock?'in':'out');
-  document.getElementById('mSpecs').innerHTML = (p.specs||[]).map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('');
-  // images
-  const mi = document.getElementById('mMainImg');
-  mi.src = p.imgs[0]; mi.alt = p.name;
-  document.getElementById('mThumbs').innerHTML = p.imgs.map((img,i)=>`<img src="${img}" class="${i===0?'active':''}" onclick="switchImg(this,'${img}')" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'">`).join('');
-  const btn = document.getElementById('mAddBtn');
-  btn.disabled = !p.stock;
+  currentProduct=p; modalQty=1;
+  document.getElementById('mQty').textContent=1;
+  document.getElementById('mCat').textContent=pCat(p);
+  document.getElementById('mName').textContent=p.name;
+  document.getElementById('mBrand').textContent=p.brand||'';
+  const price=pPrice(p);
+  document.getElementById('mPrice').textContent='TSh '+fmt(price);
+  document.getElementById('mTax').textContent='Total with tax: TSh '+fmt(price+pTax(p));
+  const stk=document.getElementById('mStock');
+  const inStock=pStock(p);
+  stk.textContent=inStock?'✅ In Stock':'❌ Out of Stock';
+  stk.className='modal-stock '+(inStock?'in':'out');
+  document.getElementById('mSpecs').innerHTML=pSpecs(p).map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('');
+  const imgs=pImgs(p);
+  const mi=document.getElementById('mMainImg');
+  mi.src=imgs[0]; mi.alt=p.name;
+  document.getElementById('mThumbs').innerHTML=imgs.map((img,i)=>`<img src="${img}" class="${i===0?'active':''}" onclick="switchImg(this,'${img}')" onerror="this.src='${PH}'">`).join('');
+  document.getElementById('mAddBtn').disabled=!inStock;
   openOverlay('productModal');
 }
-function switchImg(el, src) {
-  document.getElementById('mMainImg').src = src;
+function switchImg(el,src) {
+  document.getElementById('mMainImg').src=src;
   document.querySelectorAll('#mThumbs img').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
 }
-function changeQty(d) {
-  modalQty = Math.max(1,Math.min(10,modalQty+d));
-  document.getElementById('mQty').textContent = modalQty;
-}
-function addFromModal() { if(currentProduct) addToCart(currentProduct.id, modalQty); }
+function changeQty(d) { modalQty=Math.max(1,Math.min(10,modalQty+d)); document.getElementById('mQty').textContent=modalQty; }
+function addFromModal() { if(currentProduct) addToCart(currentProduct.id,modalQty); }
 function closeProduct() { closeOverlay('productModal'); }
 
 // ============================================================
 // CART
 // ============================================================
 function addToCart(id, qty=1) {
-  const p = PRODUCTS.find(x=>x.id===id);
-  if(!p||!p.stock) { showToast('❌ Product is out of stock','error'); return; }
-  const ex = cart.find(c=>c.id===id);
-  if(ex) ex.qty = Math.min(ex.qty+qty,10);
-  else cart.push({id, qty});
+  const p=allProducts.find(x=>x.id===id);
+  if(!p||!pStock(p)){ showToast('❌ Product is out of stock','error'); return; }
+  const ex=cart.find(c=>c.id===id);
+  if(ex) ex.qty=Math.min(ex.qty+qty,10);
+  else cart.push({id,qty});
   save('tv_cart',cart);
   updateCartUI();
+  // Badge pop animation
+  const badge=document.getElementById('cartCount');
+  badge.style.transform='scale(1.6)';
+  setTimeout(()=>badge.style.transform='scale(1)',250);
   showToast(`✅ ${p.name} added to cart!`,'success');
 }
-function removeFromCart(id) {
-  cart = cart.filter(c=>c.id!==id);
-  save('tv_cart',cart);
-  updateCartUI();
-}
-function changeCartQty(id, d) {
-  const item = cart.find(c=>c.id===id);
+function removeFromCart(id) { cart=cart.filter(c=>c.id!==id); save('tv_cart',cart); updateCartUI(); }
+function changeCartQty(id,d) {
+  const item=cart.find(c=>c.id===id);
   if(!item) return;
-  item.qty = Math.max(1,Math.min(10,item.qty+d));
+  item.qty=Math.max(1,Math.min(10,item.qty+d));
   if(item.qty===0) removeFromCart(id);
-  save('tv_cart',cart);
-  updateCartUI();
+  save('tv_cart',cart); updateCartUI();
 }
 function updateCartUI() {
-  const count = cart.reduce((s,c)=>s+c.qty,0);
-  document.getElementById('cartCount').textContent = count;
-  // render items
-  const itemsEl = document.getElementById('cartItems');
+  const count=cart.reduce((s,c)=>s+c.qty,0);
+  const badge=document.getElementById('cartCount');
+  badge.textContent=count;
+  badge.style.transition='transform .25s';
+
+  const itemsEl=document.getElementById('cartItems');
   if(!cart.length) {
-    itemsEl.innerHTML=`<div class="cart-empty"><i class="fas fa-shopping-cart"></i><p>Your cart is empty</p></div>`;
+    itemsEl.innerHTML=`<div class="cart-empty"><i class="fas fa-shopping-cart"></i><p>Your cart is empty</p><p style="font-size:11px;margin-top:4px;opacity:.7">Browse products and add items!</p></div>`;
     document.getElementById('cartTotal').textContent='TSh 0';
     return;
   }
-  let total = 0;
-  itemsEl.innerHTML = cart.map(c=>{
-    const p = PRODUCTS.find(x=>x.id===c.id);
+  let total=0;
+  itemsEl.innerHTML=cart.map(c=>{
+    const p=allProducts.find(x=>x.id===c.id);
     if(!p) return '';
-    const sub = p.price*c.qty;
-    total += sub;
+    const sub=pPrice(p)*c.qty; total+=sub;
     return `<div class="cart-item">
-      <img src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'">
+      <img src="${pImg(p)}" alt="${p.name}" onerror="this.src='${PH}'">
       <div class="cart-item-info">
         <h4>${p.name}</h4>
-        <div class="brand">${p.brand}</div>
+        <div class="brand">${p.brand||''}</div>
         <div class="price">TSh ${fmt(sub)}</div>
         <div class="cart-item-actions">
           <div class="ci-qty">
@@ -1163,46 +1129,36 @@ function updateCartUI() {
   }).join('');
   document.getElementById('cartTotal').textContent='TSh '+fmt(total);
 }
-function toggleCart() {
-  const p=document.getElementById('cartPanel');
-  const o=document.getElementById('cartOverlay');
-  p.classList.toggle('open');
-  o.classList.toggle('open');
-}
-function closeCart() {
-  document.getElementById('cartPanel').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
-}
+function toggleCart() { document.getElementById('cartPanel').classList.toggle('open'); document.getElementById('cartOverlay').classList.toggle('open'); }
+function closeCart()  { document.getElementById('cartPanel').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
 // ============================================================
 // WISHLIST
 // ============================================================
 function toggleWishItem(id) {
-  const idx = wishlist.indexOf(id);
-  if(idx>=0) wishlist.splice(idx,1);
-  else wishlist.push(id);
+  const idx=wishlist.indexOf(id);
+  if(idx>=0) wishlist.splice(idx,1); else wishlist.push(id);
   save('tv_wish',wishlist);
   updateWishUI();
   renderAllCats();
   showToast(idx>=0?'💔 Removed from wishlist':'❤️ Added to wishlist','success');
 }
 function updateWishUI() {
-  const count = wishlist.length;
-  const badge = document.getElementById('wishCount');
-  badge.textContent = count;
-  badge.style.display = count>0?'flex':'none';
-  // render
-  const el = document.getElementById('wishItems');
-  if(!wishlist.length) { el.innerHTML=`<div class="cart-empty"><i class="fas fa-heart"></i><p>Your wishlist is empty</p></div>`; return; }
-  el.innerHTML = wishlist.map(id=>{
-    const p=PRODUCTS.find(x=>x.id===id);
+  const count=wishlist.length;
+  const badge=document.getElementById('wishCount');
+  badge.textContent=count;
+  badge.style.display=count>0?'flex':'none';
+  const el=document.getElementById('wishItems');
+  if(!wishlist.length){ el.innerHTML=`<div class="cart-empty"><i class="fas fa-heart"></i><p>Your wishlist is empty</p></div>`; return; }
+  el.innerHTML=wishlist.map(id=>{
+    const p=allProducts.find(x=>x.id===id);
     if(!p) return '';
     return `<div class="cart-item">
-      <img src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'">
+      <img src="${pImg(p)}" alt="${p.name}" onerror="this.src='${PH}'">
       <div class="cart-item-info">
         <h4>${p.name}</h4>
-        <div class="brand">${p.brand}</div>
-        <div class="price">TSh ${fmt(p.price)}</div>
+        <div class="brand">${p.brand||''}</div>
+        <div class="price">TSh ${fmt(pPrice(p))}</div>
         <div class="cart-item-actions">
           <button class="btn-add" onclick="addToCart(${id})"><i class="fas fa-cart-plus"></i> Add to Cart</button>
           <button class="ci-del" onclick="toggleWishItem(${id})"><i class="fas fa-trash"></i></button>
@@ -1211,76 +1167,73 @@ function updateWishUI() {
     </div>`;
   }).join('');
 }
-function toggleWish() {
-  closeCart();
-  document.getElementById('wishPanel').classList.toggle('open');
-  document.getElementById('cartOverlay').classList.toggle('open');
-}
-function closeWish() {
-  document.getElementById('wishPanel').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
-}
+function toggleWish() { closeCart(); document.getElementById('wishPanel').classList.toggle('open'); document.getElementById('cartOverlay').classList.toggle('open'); }
+function closeWish()  { document.getElementById('wishPanel').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
 // ============================================================
 // CHECKOUT
 // ============================================================
 function openCheckout() {
-  if(!currentUser) { closeCart(); openAuth(); showToast('⚠️ Please sign in to checkout','error'); return; }
-  if(!cart.length) { showToast('🛒 Your cart is empty','error'); return; }
-  // fill summary
+  if(!currentUser){ closeCart(); openAuth(); showToast('⚠️ Please sign in to checkout','error'); return; }
+  if(!cart.length){ showToast('🛒 Your cart is empty','error'); return; }
   let total=0;
   const items=cart.map(c=>{
-    const p=PRODUCTS.find(x=>x.id===c.id);
+    const p=allProducts.find(x=>x.id===c.id);
     if(!p) return '';
-    const sub=p.price*c.qty;
-    total+=sub;
+    const sub=pPrice(p)*c.qty; total+=sub;
     return `<div class="order-row"><span>${p.name} ×${c.qty}</span><span>TSh ${fmt(sub)}</span></div>`;
   }).join('');
-  const tax=Math.round(total*.16);
-  document.getElementById('ckItems').innerHTML=items+`<div class="order-row"><span>Tax (16%)</span><span>TSh ${fmt(tax)}</span></div>`;
+  const tax=Math.round(total*.18);
+  document.getElementById('ckItems').innerHTML=items+`<div class="order-row"><span>Tax (18%)</span><span>TSh ${fmt(tax)}</span></div>`;
   document.getElementById('ckTotal').textContent='TSh '+fmt(total+tax);
-  // prefill from user profile
-  const p=load('tv_profile_'+currentUser.id,{});
-  if(document.getElementById('ckName')) document.getElementById('ckName').value=currentUser.name||'';
-  if(document.getElementById('ckPhone')&&p.phone) document.getElementById('ckPhone').value=p.phone;
-  if(document.getElementById('ckAddr')&&p.addr) document.getElementById('ckAddr').value=p.addr;
-  if(document.getElementById('ckCity')&&p.city) document.getElementById('ckCity').value=p.city;
+  document.getElementById('ckName').value=currentUser.name||'';
+  document.getElementById('ckPhone').value=currentUser.phone||'';
   closeCart();
   openOverlay('checkoutModal');
 }
 function closeCheckout() { closeOverlay('checkoutModal'); }
-function placeOrder() {
-  const name=document.getElementById('ckName').value.trim();
-  const phone=document.getElementById('ckPhone').value.trim();
-  const addr=document.getElementById('ckAddr').value.trim();
-  const city=document.getElementById('ckCity').value.trim();
-  const pay=document.getElementById('ckPay').value;
-  if(!name||!phone||!addr||!city||!pay){showToast('❌ Fill in all shipping fields','error');return;}
-  // save order
-  const orders = load('tv_orders',{});
-  const uid = currentUser.id;
-  if(!orders[uid]) orders[uid]=[];
-  let total=0;
-  cart.forEach(c=>{const p=PRODUCTS.find(x=>x.id===c.id);if(p)total+=p.price*c.qty;});
-  const order={id:'ORD'+Date.now(),date:new Date().toLocaleDateString('en-TZ'),items:[...cart],total,pay,shipping:{name,phone,addr,city},status:'Pending'};
-  orders[uid].unshift(order);
-  save('tv_orders',orders);
-  cart=[];
-  save('tv_cart',[]);
-  updateCartUI();
-  closeCheckout();
-  showToast('🎉 Order placed! Order ID: '+order.id,'success');
+
+async function placeOrder() {
+  const name   = document.getElementById('ckName').value.trim();
+  const phone  = document.getElementById('ckPhone').value.trim();
+  const addr   = document.getElementById('ckAddr').value.trim();
+  const city   = document.getElementById('ckCity').value.trim();
+  const region = document.getElementById('ckRegion').value.trim();
+  const pay    = document.getElementById('ckPay').value;
+  if(!name||!phone||!addr||!city||!pay){ showToast('❌ Fill in all shipping fields','error'); return; }
+
+  const btn=document.querySelector('#checkoutModal .btn-auth');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+  try {
+    const res=await apiFetch('/api/orders',{
+      method:'POST',
+      body:{
+        items:cart.map(c=>({product_id:c.id, quantity:c.qty})),
+        shipping_name:name, shipping_phone:phone,
+        shipping_address:addr, shipping_city:city,
+        shipping_region:region||null, payment_method:pay
+      }
+    });
+    cart=[]; save('tv_cart',[]);
+    updateCartUI(); closeCheckout();
+    showToast('🎉 Order placed! #'+(res.order?.order_number||res.order_number||''),'success');
+  } catch(e) {
+    const msg=e.data?.errors?Object.values(e.data.errors).flat()[0]:(e.data?.message||'Order failed');
+    showToast('❌ '+msg,'error');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-check-circle"></i> Place Order';
+  }
 }
 
 // ============================================================
-// PAYMENT
+// PAYMENT METHODS
 // ============================================================
-function payWith(m) { showToast('💳 '+m+' payment selected! Proceed to place order.','success'); }
+function payWith(m) { showToast('💳 '+m+' selected. Proceed to place order.','success'); }
 
 // ============================================================
 // AUTH
 // ============================================================
-function openAuth() { showLogin(); openOverlay('authModal'); }
+function openAuth()  { showLogin(); openOverlay('authModal'); }
 function closeAuth() { closeOverlay('authModal'); }
 function showLogin() {
   document.getElementById('loginForm').style.display='block';
@@ -1300,126 +1253,134 @@ function showForgot() {
   document.getElementById('forgotForm').style.display='block';
   clearMsgs();
 }
-function clearMsgs() { document.querySelectorAll('.msg').forEach(m=>{m.classList.remove('show');m.textContent=''}); }
+function clearMsgs() { document.querySelectorAll('.msg').forEach(m=>{m.classList.remove('show');m.textContent='';}); }
 
-function googleSignIn() {
-  // Simulate Google OAuth (real implementation needs a backend)
-  const googleUser = {
-    id: 'google_'+Date.now(),
-    name: 'Google User',
-    email: 'user@gmail.com',
-    role: 'customer',
-    provider: 'google'
-  };
-  // Check existing google users
-  const users = load('tv_users',[]);
-  let existing = users.find(u=>u.email===googleUser.email&&u.provider==='google');
-  if(!existing) {
-    googleUser.id = 'g_'+Math.random().toString(36).slice(2);
-    users.push(googleUser);
-    save('tv_users',users);
-    existing = googleUser;
-  }
-  currentUser = existing;
-  save('tv_user',existing);
-  updateUserUI();
-  closeAuth();
-  showToast('✅ Signed in with Google! Welcome '+existing.name,'success');
-}
+function googleSignIn() { showToast('⚠️ Google OAuth not configured yet','error'); }
 
-function doLogin() {
-  const u=document.getElementById('lUser').value.trim();
-  const p=document.getElementById('lPass').value.trim();
-  const err=document.getElementById('loginErr');
+async function doLogin() {
+  const login = document.getElementById('lUser').value.trim();
+  const pass  = document.getElementById('lPass').value.trim();
+  const err   = document.getElementById('loginErr');
   err.classList.remove('show');
-  if(!u||!p){err.textContent='❌ Please fill in all fields';err.classList.add('show');return;}
-  const users=load('tv_users',[]);
-  const user=users.find(x=>(x.username===u||x.email===u)&&x.password===p&&!x.provider);
-  if(!user){err.textContent='❌ Invalid username or password';err.classList.add('show');return;}
-  currentUser=user;
-  save('tv_user',user);
-  updateUserUI();
-  closeAuth();
-  showToast('✅ Welcome back, '+user.name+'!','success');
+  if(!login||!pass){ err.textContent='❌ Please fill in all fields'; err.classList.add('show'); return; }
+
+  const btn=document.querySelector('#loginForm .btn-auth');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Signing in...';
+  try {
+    const res=await apiFetch('/api/auth/login',{method:'POST',body:{login,password:pass}});
+    setToken(res.token);
+    currentUser=res.user;
+    save('tv_user',res.user);
+    updateUserUI(); closeAuth();
+    showToast('✅ Welcome back, '+res.user.name+'!','success');
+  } catch(e) {
+    err.textContent='❌ '+(e.data?.message||'Invalid credentials');
+    err.classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Sign In';
+  }
 }
 
-function doRegister() {
-  const name=document.getElementById('rName').value.trim();
-  const uname=document.getElementById('rUser').value.trim();
-  const email=document.getElementById('rEmail').value.trim();
-  const pass=document.getElementById('rPass').value.trim();
-  const conf=document.getElementById('rConf').value.trim();
-  const err=document.getElementById('regErr');
-  const ok=document.getElementById('regOk');
+async function doRegister() {
+  const name  = document.getElementById('rName').value.trim();
+  const email = document.getElementById('rEmail').value.trim();
+  const phone = document.getElementById('rPhone').value.trim();
+  const pass  = document.getElementById('rPass').value.trim();
+  const conf  = document.getElementById('rConf').value.trim();
+  const err   = document.getElementById('regErr');
+  const ok    = document.getElementById('regOk');
   err.classList.remove('show'); ok.classList.remove('show');
-  if(!name||!uname||!email||!pass||!conf){err.textContent='❌ All fields required';err.classList.add('show');return;}
-  if(pass.length<6){err.textContent='❌ Password must be at least 6 characters';err.classList.add('show');return;}
-  if(pass!==conf){err.textContent='❌ Passwords do not match';err.classList.add('show');return;}
-  if(!email.includes('@')||!email.includes('.')){err.textContent='❌ Invalid email address';err.classList.add('show');return;}
-  let users=load('tv_users',[]);
-  if(users.find(u=>u.username===uname)){err.textContent='❌ Username already taken';err.classList.add('show');return;}
-  if(users.find(u=>u.email===email)){err.textContent='❌ Email already registered';err.classList.add('show');return;}
-  const newUser={id:'u_'+Date.now(),name,username:uname,email,password:pass,role:'customer'};
-  users.push(newUser);
-  save('tv_users',users);
-  ok.textContent='✅ Account created! Signing you in...';
-  ok.classList.add('show');
-  setTimeout(()=>{
-    currentUser=newUser;
-    save('tv_user',newUser);
-    updateUserUI();
-    closeAuth();
-    showToast('🎉 Welcome to TechVault, '+name+'!','success');
-  },1200);
+  if(!name||!email||!pass||!conf){ err.textContent='❌ All fields required'; err.classList.add('show'); return; }
+  if(pass.length<6){ err.textContent='❌ Password must be at least 6 characters'; err.classList.add('show'); return; }
+  if(pass!==conf){ err.textContent='❌ Passwords do not match'; err.classList.add('show'); return; }
+
+  const btn=document.querySelector('#signupForm .btn-auth');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+  try {
+    const body={name,email,password:pass,password_confirmation:conf};
+    if(phone) body.phone=phone;
+    const res=await apiFetch('/api/auth/register',{method:'POST',body});
+    setToken(res.token);
+    currentUser=res.user;
+    save('tv_user',res.user);
+    ok.textContent='✅ Account created! Signing you in...'; ok.classList.add('show');
+    setTimeout(()=>{ updateUserUI(); closeAuth(); showToast('🎉 Welcome to TechVault, '+res.user.name+'!','success'); },900);
+  } catch(e) {
+    const msgs=e.data?.errors?Object.values(e.data.errors).flat().join(' '):(e.data?.message||'Registration failed');
+    err.textContent='❌ '+msgs; err.classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-user-plus"></i> Create Account';
+  }
 }
 
-function doForgot() {
+async function doForgot() {
   const email=document.getElementById('fpEmail').value.trim();
   const err=document.getElementById('fpErr');
   const ok=document.getElementById('fpOk');
   err.classList.remove('show'); ok.classList.remove('show');
-  if(!email){err.textContent='❌ Please enter your email';err.classList.add('show');return;}
-  const users=load('tv_users',[]);
-  const user=users.find(u=>u.email===email);
-  if(!user){err.textContent='❌ No account found with this email';err.classList.add('show');return;}
-  ok.textContent='✅ Password reset link sent to '+email+' (Demo mode)';
-  ok.classList.add('show');
-  setTimeout(()=>showLogin(),2500);
+  if(!email){ err.textContent='❌ Please enter your email'; err.classList.add('show'); return; }
+  try {
+    const res=await apiFetch('/api/auth/forgot-password/send-code',{method:'POST',body:{email}});
+    let msg='✅ Reset code sent to '+email;
+    if(res.demo_otp) msg+=` — DEV code: ${res.demo_otp}`;
+    ok.textContent=msg; ok.classList.add('show');
+  } catch(e) {
+    err.textContent='❌ '+(e.data?.message||'Failed to send code'); err.classList.add('show');
+  }
 }
 
-function doLogout() {
-  if(!currentUser){showToast('You are not signed in','error');return;}
-  currentUser=null;
-  save('tv_user',null);
-  updateUserUI();
-  closeAcct();
+async function doLogout() {
+  if(!currentUser){ showToast('You are not signed in','error'); return; }
+  try { await apiFetch('/api/auth/logout',{method:'POST'}); } catch(e){}
+  currentUser=null; setToken(null); save('tv_user',null);
+  hideAdminNav(); updateUserUI(); closeAcct();
   showToast('👋 Signed out successfully','success');
 }
 
 function updateUserUI() {
-  document.getElementById('uName').textContent = currentUser?currentUser.name:'Guest User';
-  document.getElementById('uRole').textContent = currentUser?(currentUser.role==='admin'?'Administrator':'Customer'):'Not signed in';
-  // profile page
+  document.getElementById('uName').textContent=currentUser?currentUser.name:'Guest User';
+  document.getElementById('uRole').textContent=currentUser?(currentUser.role==='admin'?'Administrator':'Customer'):'Not signed in';
   if(currentUser) {
-    document.getElementById('profileName').textContent = currentUser.name;
-    document.getElementById('profileEmail').textContent = currentUser.email||'';
-    document.getElementById('profileAvatar').textContent = (currentUser.name||'G')[0].toUpperCase();
-    const p=load('tv_profile_'+currentUser.id,{});
+    document.getElementById('profileName').textContent=currentUser.name;
+    document.getElementById('profileEmail').textContent=currentUser.email||currentUser.phone||'';
+    document.getElementById('profileAvatar').textContent=(currentUser.name||'G')[0].toUpperCase();
     document.getElementById('pfName').value=currentUser.name||'';
     document.getElementById('pfEmail').value=currentUser.email||'';
-    document.getElementById('pfPhone').value=p.phone||'';
-    document.getElementById('pfCity').value=p.city||'';
-    document.getElementById('pfAddr').value=p.addr||'';
+    document.getElementById('pfPhone').value=currentUser.phone||'';
+    if(currentUser.role==='admin') showAdminNav();
   }
+}
+
+// Show/hide password toggle
+function togglePw(inputId,btn) {
+  const inp=document.getElementById(inputId);
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.innerHTML=show?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>';
+}
+
+// ============================================================
+// ADMIN NAV
+// ============================================================
+function showAdminNav() {
+  if(document.getElementById('nav-admin')) return;
+  const nav=document.querySelector('.nav');
+  const li=document.createElement('li');
+  li.innerHTML=`<a onclick="showPage('admin')" id="nav-admin"><i class="fas fa-chart-bar"></i><span> Admin</span></a>`;
+  nav.appendChild(li);
+}
+function hideAdminNav() {
+  const li=document.querySelector('#nav-admin')?.parentElement;
+  if(li) li.remove();
 }
 
 // ============================================================
 // SETTINGS
 // ============================================================
 function openSettings() { loadTheme(); openOverlay('settingsModal'); }
-function closeSets() { closeOverlay('settingsModal'); }
+function closeSets()    { closeOverlay('settingsModal'); }
 function setTheme(t) {
-  document.body.className = document.body.className.replace(/\b(dark|ocean|royal)\b/g,'').trim();
+  document.body.className=document.body.className.replace(/\b(dark|ocean|royal)\b/g,'').trim();
   if(t!=='light') document.body.classList.add(t);
   save('tv_theme',t);
   document.querySelectorAll('.theme-opt').forEach(el=>el.classList.remove('active'));
@@ -1435,101 +1396,142 @@ function resetSettings() { setTheme('light'); showToast('🔄 Settings reset to 
 function showPage(page) {
   document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('page-'+page)?.classList.add('active');
   const n=document.getElementById('nav-'+page);
   if(n) n.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
-  if(page==='orders') renderOrders();
+  if(page==='orders')  renderOrders();
   if(page==='admin'&&currentUser?.role==='admin') renderAdmin();
   if(page==='profile') updateUserUI();
 }
 
-function renderOrders() {
+// ============================================================
+// ORDERS (real API)
+// ============================================================
+async function renderOrders() {
   const el=document.getElementById('ordersContent');
-  if(!currentUser){el.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fas fa-user" style="font-size:40px;opacity:.3;margin-bottom:12px"></i><p>Please <a href="#" onclick="openAuth()" style="color:var(--primary);font-weight:700">sign in</a> to view your orders</p></div>`;return;}
-  const all=load('tv_orders',{});
-  const orders=(all[currentUser.id]||[]);
-  if(!orders.length){el.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fas fa-box" style="font-size:40px;opacity:.3;margin-bottom:12px"></i><p>No orders yet. <a href="#" onclick="showPage('home')" style="color:var(--primary);font-weight:700">Start shopping!</a></p></div>`;return;}
-  el.innerHTML=orders.map(o=>{
-    const itemNames=o.items.map(c=>{const p=PRODUCTS.find(x=>x.id===c.id);return p?p.name+' ×'+c.qty:'';}).join(', ');
-    return `<div class="order-card">
-      <div class="order-card-header">
-        <div><div class="order-id">${o.id}</div><div class="order-date">${o.date} · ${o.shipping.city} · ${o.pay}</div></div>
-        <span class="order-status ${o.status.toLowerCase()}">${o.status}</span>
-      </div>
-      <div class="order-items-list">${itemNames}</div>
-      <div class="order-total">TSh ${fmt(o.total)}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderAdmin() {
-  const all=load('tv_orders',{});
-  const users=load('tv_users',[]);
-  const allOrders=Object.values(all).flat();
-  const rev=allOrders.reduce((s,o)=>s+o.total,0);
-  document.getElementById('adminProd').textContent=PRODUCTS.length;
-  document.getElementById('adminOrds').textContent=allOrders.length;
-  document.getElementById('adminUsers').textContent=users.length;
-  document.getElementById('adminRev').textContent=fmt(rev);
-  const tbody=document.getElementById('adminTbody');
-  tbody.innerHTML=allOrders.map(o=>{
-    const user=users.find(u=>Object.keys(all).some(uid=>all[uid].some(ord=>ord.id===o.id)&&uid===u.id));
-    return `<tr><td>${o.id}</td><td>${o.shipping.name}</td><td>${o.items.length} items</td><td>TSh ${fmt(o.total)}</td><td>${o.pay}</td><td><span class="order-status ${o.status.toLowerCase()}">${o.status}</span></td><td>${o.date}</td></tr>`;
-  }).join('');
+  if(!currentUser) {
+    el.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fas fa-user" style="font-size:40px;opacity:.3;margin-bottom:12px;display:block"></i><p>Please <a onclick="openAuth()" style="color:var(--primary);font-weight:700;cursor:pointer">sign in</a> to view your orders</p></div>`;
+    return;
+  }
+  el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted)"><i class="fas fa-spinner fa-spin" style="font-size:24px"></i></div>`;
+  try {
+    const orders=await apiFetch('/api/orders');
+    if(!orders.length) {
+      el.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fas fa-box" style="font-size:40px;opacity:.3;margin-bottom:12px;display:block"></i><p>No orders yet. <a onclick="showPage('home')" style="color:var(--primary);font-weight:700;cursor:pointer">Start shopping!</a></p></div>`;
+      return;
+    }
+    el.innerHTML=orders.map(o=>`
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-id">${o.order_number}</div>
+            <div class="order-date">${new Date(o.created_at).toLocaleDateString('en-TZ')} · ${o.shipping_city} · ${o.payment_method}</div>
+          </div>
+          <span class="order-status ${(o.order_status||'pending').toLowerCase()}">${o.order_status||'pending'}</span>
+        </div>
+        <div class="order-items-list">${(o.items||[]).map(i=>i.product_name+' ×'+i.quantity).join(', ')}</div>
+        <div class="order-total">TSh ${fmt(o.total)}</div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--danger)"><i class="fas fa-exclamation-circle"></i> Failed to load orders.</div>`;
+  }
 }
 
 // ============================================================
-// PROFILE
+// ADMIN PANEL (real API)
 // ============================================================
-function saveProfile() {
-  if(!currentUser){showToast('Please sign in first','error');return;}
-  const profile={
-    phone:document.getElementById('pfPhone').value.trim(),
-    city:document.getElementById('pfCity').value.trim(),
-    addr:document.getElementById('pfAddr').value.trim()
-  };
-  const newName=document.getElementById('pfName').value.trim();
-  const newEmail=document.getElementById('pfEmail').value.trim();
-  if(newName) currentUser.name=newName;
-  if(newEmail) currentUser.email=newEmail;
-  save('tv_user',currentUser);
-  // update in users list
-  let users=load('tv_users',[]);
-  const ui=users.findIndex(u=>u.id===currentUser.id);
-  if(ui>=0){users[ui]=currentUser;save('tv_users',users);}
-  save('tv_profile_'+currentUser.id,profile);
-  updateUserUI();
-  showToast('✅ Profile saved successfully','success');
+async function renderAdmin() {
+  if(!currentUser||currentUser.role!=='admin') return;
+  try {
+    const [prods, orders] = await Promise.all([
+      apiFetch('/api/admin/products'),
+      apiFetch('/api/admin/orders'),
+    ]);
+    const prodList=Array.isArray(prods)?prods:(prods.data||[]);
+    const ordList =Array.isArray(orders)?orders:(orders.data||[]);
+    const rev=ordList.reduce((s,o)=>s+(parseFloat(o.total)||0),0);
+
+    document.getElementById('adminProd').textContent=prodList.length;
+    document.getElementById('adminOrds').textContent=ordList.length;
+    document.getElementById('adminUsers').textContent='—';
+    document.getElementById('adminRev').textContent=fmt(rev);
+
+    document.getElementById('adminTbody').innerHTML=ordList.map(o=>`
+      <tr>
+        <td>${o.order_number}</td>
+        <td>${o.shipping_name}</td>
+        <td>${(o.items||[]).length} items</td>
+        <td>TSh ${fmt(o.total)}</td>
+        <td>${o.payment_method}</td>
+        <td><span class="order-status ${(o.order_status||'pending').toLowerCase()}">${o.order_status||'pending'}</span></td>
+        <td>${new Date(o.created_at).toLocaleDateString('en-TZ')}</td>
+      </tr>`).join('');
+  } catch(e) {
+    showToast('❌ Failed to load admin data','error');
+  }
 }
 
 // ============================================================
-// CONTACT
+// PROFILE (real API)
 // ============================================================
-function sendMsg() {
+async function saveProfile() {
+  if(!currentUser){ showToast('Please sign in first','error'); return; }
+  const name  = document.getElementById('pfName').value.trim();
+  const phone = document.getElementById('pfPhone').value.trim();
+  const btn   = document.querySelector('.profile-section .btn-auth');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';
+  try {
+    const body={name};
+    if(phone) body.phone=phone;
+    const res=await apiFetch('/api/user',{method:'PUT',body});
+    currentUser=res; save('tv_user',res);
+    updateUserUI();
+    showToast('✅ Profile saved successfully','success');
+  } catch(e) {
+    showToast('❌ Failed to save profile','error');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save Changes';
+  }
+}
+
+// ============================================================
+// CONTACT (real API)
+// ============================================================
+async function sendMsg() {
   const n=document.getElementById('cName').value.trim();
   const e=document.getElementById('cEmail').value.trim();
+  const ph=document.getElementById('cPhone').value.trim();
   const s=document.getElementById('cSubj').value;
   const m=document.getElementById('cMsg').value.trim();
-  if(!n||!e||!s||!m){showToast('❌ Please fill all required fields','error');return;}
-  if(!e.includes('@')){showToast('❌ Invalid email address','error');return;}
-  showToast('✅ Message sent! We\'ll respond within 24 hours, '+n,'success');
-  document.getElementById('cName').value='';document.getElementById('cEmail').value='';
-  document.getElementById('cPhone').value='';document.getElementById('cSubj').value='';
-  document.getElementById('cMsg').value='';
+  if(!n||!e||!s||!m){ showToast('❌ Please fill all required fields','error'); return; }
+  if(!e.includes('@')){ showToast('❌ Invalid email address','error'); return; }
+
+  const btn=document.querySelector('.btn-send');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sending...';
+  try {
+    await apiFetch('/api/contact',{method:'POST',body:{name:n,email:e,phone:ph,subject:s,message:m}});
+    showToast("✅ Message sent! We'll respond within 24 hours, "+n,'success');
+    ['cName','cEmail','cPhone','cMsg'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('cSubj').value='';
+  } catch(err) {
+    showToast('❌ Failed to send message. Please try again.','error');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Send Message';
+  }
 }
 
 // ============================================================
 // OVERLAY HELPERS
 // ============================================================
-function openOverlay(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function openOverlay(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeOverlay(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 document.querySelectorAll('.overlay').forEach(o=>{
   o.addEventListener('click',e=>{
     if(e.target===o){
-      if(o.id==='authModal') closeAuth();
+      if(o.id==='authModal')     closeAuth();
       else if(o.id==='settingsModal') closeSets();
-      else if(o.id==='productModal') closeProduct();
+      else if(o.id==='productModal')  closeProduct();
       else if(o.id==='checkoutModal') closeCheckout();
     }
   });
@@ -1539,13 +1541,13 @@ document.querySelectorAll('.overlay').forEach(o=>{
 // ACCOUNT DROPDOWN
 // ============================================================
 function toggleAcct() { document.getElementById('acctMenu').classList.toggle('open'); }
-function closeAcct() { document.getElementById('acctMenu').classList.remove('open'); }
+function closeAcct()  { document.getElementById('acctMenu').classList.remove('open'); }
 
 // ============================================================
 // TOAST
 // ============================================================
 let toastTimer;
-function showToast(msg, type='success') {
+function showToast(msg,type='success') {
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' show';
   clearTimeout(toastTimer);
@@ -1556,25 +1558,6 @@ function showToast(msg, type='success') {
 // HELPERS
 // ============================================================
 function fmt(n) { return Number(n).toLocaleString('en-TZ'); }
-
-// Admin access
-window._adminLogin = function(){
-  const users=load('tv_users',[]);
-  let admin=users.find(u=>u.role==='admin');
-  if(!admin){
-    admin={id:'admin_1',name:'Admin TechVault',email:'admin@techvault.co.tz',username:'admin',password:'admin123',role:'admin'};
-    users.push(admin); save('tv_users',users);
-  }
-  currentUser=admin; save('tv_user',admin); updateUserUI();
-  // Add admin page to nav
-  const nav=document.querySelector('.nav');
-  if(!document.getElementById('nav-admin')){
-    const li=document.createElement('li');
-    li.innerHTML=`<a onclick="showPage('admin')" id="nav-admin"><i class="fas fa-chart-bar"></i><span> Admin</span></a>`;
-    nav.appendChild(li);
-  }
-  showToast('✅ Admin access granted','success');
-};
 </script>
 </body>
 </html>
